@@ -1,0 +1,5 @@
+.board-component {
+    background-color: black;
+    display: flex;
+    flex-wrap: wrap;
+}
