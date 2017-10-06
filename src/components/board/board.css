@@ -1,5 +1,6 @@
 .board-component {
     background-color: black;
+    padding: 10px;
     display: flex;
     flex-wrap: wrap;
 }

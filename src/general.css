@@ -1,0 +1,20 @@
+/*general classes*/
+.hidden {
+    display: none;
+}
+
+.centerContent {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.horizontalAlignContent {
+    display: flex;
+    justify-content: center;
+}
+
+.verticalAlignContent {
+    display: flex;
+    align-items: center;
+}
