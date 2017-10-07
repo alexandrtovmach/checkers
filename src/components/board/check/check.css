@@ -5,6 +5,10 @@
     border-radius: 50%;
 }
 
+svg {
+    opacity: 0.8;
+}
+
 .side0 {
     background: radial-gradient(#FFE940 30%, white 35%, #FFE940 40%, #FFE940 50%, white 60%, #FFE940 65%);
 }

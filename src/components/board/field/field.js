@@ -27,7 +27,7 @@ export class Field extends Component {
                 className={`row${+this.props.row} status${this.props.status} field-component`}
                 onClick={this.toggleFieldActivity.bind(this)}
             >
-                <Check show={this.props.checker} side={this.props.side}/>
+                <Check show={this.props.checker} side={this.props.side} queen={this.props.queen}/>
             </div>
         )
     }

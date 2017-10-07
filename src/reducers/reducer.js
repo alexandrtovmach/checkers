@@ -1,4 +1,4 @@
-import { getStepsFields, clearBoardStatus } from './fieldStatusReducer'
+import { getStepsFields, checkToQueen, clearBoardStatus } from './fieldStatusReducer'
 
 
 const fields = [];
@@ -19,17 +19,20 @@ export function game(state = {}, action) {
     switch (action.type) {
         case 'CLICK_FIELD': {
             if (state.fields[action.payload].checker) {
-                const fieldArr = clearBoardStatus(state.fields),
-                fieldsStatus = getStepsFields(action.payload, state.fields[action.payload].myCheckers, state.fields[action.payload].queen );
+                const fieldArr = clearBoardStatus(state.fields);
 
-                fieldsStatus.forEach(elem => {
+                getStepsFields(action.payload, state.fields[action.payload].myCheckers, state.fields[action.payload].queen).forEach(elem => {
+                    const myFields = elem.includes('m');
+                    elem = parseFloat(elem);
                     if (elem >= 0 && elem <= 31) {
-                        if (!fieldArr[elem].checker) {
+                        if (!fieldArr[elem].checker && myFields) {
                             fieldArr[elem].status = 2;
                         } else {
                             getStepsFields(fieldArr[elem].fieldIndex, state.fields[action.payload].myCheckers, state.fields[action.payload].queen).forEach(el => {
+                                el = parseFloat(el);
                                 if ((el >= 0 && el <= 31) && 
                                     !fieldArr[el].checker && 
+                                    fieldArr[elem].checker && 
                                     (fieldArr[action.payload].myCheckers !== fieldArr[elem].myCheckers) &&
                                     (Math.abs(fieldArr[el].fieldIndex - fieldArr[action.payload].fieldIndex) !== 8) &&
                                     (Math.abs(fieldArr[el].fieldIndex - fieldArr[action.payload].fieldIndex) !== 1)
@@ -61,6 +64,7 @@ export function game(state = {}, action) {
             cacheArr[state.activeField.index].checker = false;
             cacheArr[action.payload].checker = true;
             cacheArr[action.payload].myCheckers = state.activeField.myCheckers;
+            cacheArr[action.payload].queen = checkToQueen(action.payload, state.activeField.myCheckers);
 
             return {
                 ...state,
@@ -76,10 +80,12 @@ export function game(state = {}, action) {
             cacheArr[action.payload.victimField].checker = false;
             cacheArr[action.payload.to].checker = true;
             cacheArr[action.payload.to].myCheckers = state.activeField.myCheckers;
+            cacheArr[action.payload.to].queen = checkToQueen(action.payload, state.activeField.myCheckers);
 
             return {
                 ...state,
-                fields: cacheArr
+                fields: cacheArr,
+                activeField: null
             }
             break;
         }

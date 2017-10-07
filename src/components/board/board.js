@@ -26,6 +26,7 @@ export class Board extends Component {
                     status={elem.status}
                     victimField={elem.victimField}
                     fieldIndex={elem.fieldIndex}
+                    queen={elem.queen}
                     onClickField = {this.props.store.onClickField}
                     onStepField = {this.props.store.onStepField}
                     onHitField = {this.props.store.onHitField}
