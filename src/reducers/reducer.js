@@ -1,4 +1,4 @@
-import { getStepsFields, checkToQueen, clearBoardStatus } from './fieldStatusReducer'
+import { getStepsFields, checkToQueen, clearBoardStatus, checkToDouble } from './fieldStatusReducer'
 
 
 const fields = [];
@@ -11,9 +11,6 @@ for (let i = 0; i < 32; i++) {
         victimField: null,
         queen: false
     })
-    if (i===20) {
-        fields[i].queen = true;
-    }
 }
 
 export function game(state = {}, action) {
@@ -41,20 +38,31 @@ export function game(state = {}, action) {
                                 }
                                 if ((el >= 0 && el <= 31) && 
                                     !fieldArr[el].checker && 
-                                    fieldArr[elem].checker && 
-                                    (fieldArr[action.payload].myCheckers !== fieldArr[elem].myCheckers)
+                                    fieldArr[elem].checker
                                 ) {
                                     if (state.fields[action.payload].queen) {
-                                        if ((steps.indexOf(el) > -1) && 
-                                            (((action.payload > elem) && (el < elem)) ||
-                                            ((action.payload < elem) && (el > elem)))
-                                        ) {
-                                            fieldArr[el].victimField = elem;
-                                            fieldArr[el].status = 3;
+                                        let pos = steps.indexOf(el);
+                                        if ((pos > -1) && (((action.payload > elem) && (el < elem)) || ((action.payload < elem) && (el > elem)))) {
+                                            if (el < action.payload) {
+                                                if (fieldArr[steps[pos-2]].checker && !(action.payload === steps[pos-2]) && fieldArr[steps[pos-1]].checker || (fieldArr[action.payload].myCheckers === fieldArr[elem].myCheckers) || checkToDouble(pos, true, steps, fieldArr)) {
+                                                    fieldArr[el].status = 4;
+                                                } else {
+                                                    fieldArr[el].victimField = elem;
+                                                    fieldArr[el].status = 3;
+                                                }
+                                            } else {
+                                                if (fieldArr[steps[pos+2]].checker && !(action.payload === steps[pos+2]) && fieldArr[steps[pos+1]].checker || (fieldArr[action.payload].myCheckers === fieldArr[elem].myCheckers) || checkToDouble(pos, false, steps, fieldArr)) {
+                                                    fieldArr[el].status = 4;
+                                                } else {
+                                                    fieldArr[el].victimField = elem;
+                                                    fieldArr[el].status = 3;
+                                                }
+                                            }
                                         }
                                     } else if (
                                         (Math.abs(fieldArr[el].fieldIndex - fieldArr[action.payload].fieldIndex) !== 8) &&
-                                        (Math.abs(fieldArr[el].fieldIndex - fieldArr[action.payload].fieldIndex) !== 1)
+                                        (Math.abs(fieldArr[el].fieldIndex - fieldArr[action.payload].fieldIndex) !== 1) && 
+                                        (fieldArr[action.payload].myCheckers !== fieldArr[elem].myCheckers)
                                     ) {
                                         fieldArr[el].victimField = elem;
                                         fieldArr[el].status = 3;
@@ -64,7 +72,7 @@ export function game(state = {}, action) {
                         }
                         if (state.fields[action.payload].queen) {
                             for (let i = 0; i < steps.length; i++) {
-                                if ((fieldArr[steps[i]].status !== 3)&&(!fieldArr[steps[i]].checker)) {
+                                if ((fieldArr[steps[i]].status !== 3)&&(fieldArr[steps[i]].status !== 4)&&(!fieldArr[steps[i]].checker)) {
                                     fieldArr[steps[i]].status = 2;
                                 }
                             }

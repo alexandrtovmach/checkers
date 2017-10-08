@@ -68,3 +68,21 @@ export function clearBoardStatus(arr) {
 export function checkToQueen(i, myField) {
     return (myField? [0,1,2,3]: [28,29,30,31]).indexOf(i) !== -1
 }
+
+export function checkToDouble(pos, way, steps, fields) {
+    let result = false;
+    if (way) {
+        steps.forEach((element, i) => {
+            if (pos > i && fields[element].status === 4) {
+                result = true;
+            };
+        });
+    } else {
+        steps.forEach((element, i) => {
+            if (pos < i && fields[element].status === 4) {
+                result = true;
+            };
+        });
+    }
+    return result;
+}
