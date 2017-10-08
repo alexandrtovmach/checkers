@@ -1,4 +1,5 @@
 import { getStepsFields, checkToQueen, clearBoardStatus, checkToDouble } from './fieldStatusReducer'
+import socketService from '../services/socketService';
 
 
 const fields = [];
@@ -14,7 +15,7 @@ for (let i = 0; i < 32; i++) {
 }
 
 export function game(state = {}, action) {
-    state.fields = fields;
+    state.fields = state.fields || fields;
 
     switch (action.type) {
         case 'CLICK_FIELD': {
@@ -81,7 +82,6 @@ export function game(state = {}, action) {
                 })
 
                 fieldArr[action.payload].status = 1;
-
                 return {
                     ...state,
                     fields: fieldArr,
@@ -100,6 +100,8 @@ export function game(state = {}, action) {
             cacheArr[action.payload].checker = true;
             cacheArr[action.payload].myCheckers = state.activeField.myCheckers;
             cacheArr[action.payload].queen = cacheArr[state.activeField.index].queen || checkToQueen(action.payload, state.activeField.myCheckers);
+            
+            socketService.sendBoard(cacheArr, state.room);
 
             return {
                 ...state,
@@ -116,11 +118,39 @@ export function game(state = {}, action) {
             cacheArr[action.payload.to].checker = true;
             cacheArr[action.payload.to].myCheckers = state.activeField.myCheckers;
             cacheArr[action.payload.to].queen = cacheArr[state.activeField.index].queen || checkToQueen(action.payload.to, state.activeField.myCheckers);
+            
+            socketService.sendBoard(cacheArr, state.room);
 
             return {
                 ...state,
                 fields: cacheArr,
                 activeField: null
+            }
+            break;
+        }
+        case 'GET_BOARD': {
+            return {
+                ...state,
+                fields: action.payload,                
+                activeField: null
+            }
+            break;
+        }
+        case 'NEW_ROOM': {
+            socketService.newRoom();
+            break;
+        }
+        case 'JOIN_ROOM': {
+            socketService.joinRoom();
+            break;
+        }
+        case 'JOINED_ROOM': {
+
+            console.log('joined', action.payload);
+
+            return {
+                ...state,
+                room: action.payload
             }
             break;
         }
