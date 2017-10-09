@@ -21,6 +21,7 @@ export function game(state = {}, action) {
     state.fields = state.fields || fields;
     state.rooms = state.rooms || [];
     state.myId = state.myId || '';
+    state.gameTitle = state.gameTitle || 'Easy Checkers';
     switch (action.type) {
         case 'CLICK_FIELD': {
             if (state.fields[action.payload].checker) {
@@ -153,7 +154,8 @@ export function game(state = {}, action) {
         case 'JOINED_ROOM': {            
             return {
                 ...state,
-                ...action.payload
+                ...action.payload,
+                gameTitle: action.title
             };
             break;
         }

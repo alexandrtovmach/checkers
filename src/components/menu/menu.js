@@ -38,22 +38,25 @@ export class Menu extends Component {
     render() {
         return (
             <div>
-                <h2>Menu</h2>
-                <form onSubmit={this.onNewRoom.bind(this, (e) => e)}>
-                    <button>Create new room</button>
+                <h3>Create new game</h3>
+                <form className="centerContent" onSubmit={this.onNewRoom.bind(this, (e) => e)}>
                     <input ref="nameNewRoom" placeholder="Name room..." required></input>
+                    <button>&#10004;</button>
                 </form>
-                <div className={(this.props.rooms.activeGames && this.props.rooms.activeGames.length)? '': 'hidden'}>
-                    <h3>Active games</h3>
-                    <ul>
-                        {this.generateRoomList(true)}
-                    </ul>
-                </div>
-                <div className={this.props.rooms.otherGames && this.props.rooms.otherGames.length? '': 'hidden'}>
-                    <h3>Room list</h3>
-                    <ul>
-                        {this.generateRoomList()}
-                    </ul>
+                <h3>...or find already, and start the game</h3>
+                <div className="horizontalAlignContent">
+                    <div className={(this.props.rooms.activeGames && this.props.rooms.activeGames.length)? 'active': 'hidden'}>
+                        <h3>Active games</h3>
+                        <ul>
+                            {this.generateRoomList(true)}
+                        </ul>
+                    </div>
+                    <div className={this.props.rooms.otherGames && this.props.rooms.otherGames.length? 'other': 'hidden'}>
+                        <h3>Other games</h3>
+                        <ul>
+                            {this.generateRoomList()}
+                        </ul>
+                    </div>
                 </div>
             </div>
         )

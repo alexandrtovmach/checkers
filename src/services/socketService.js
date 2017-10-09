@@ -1,6 +1,6 @@
 import io from 'socket.io-client';
 
-export const socket = io('http://192.168.1.65:3001');
+export const socket = io('http://localhost:3001');
 
 export function SocketService() {}
 
@@ -18,10 +18,9 @@ function newRoom(name) {
 }
 
 function joinRoom(roomId, myId) {
-    console.log(roomId, myId);
     socket.emit('join room', roomId, myId)
 }
 
-function getRoomList() {
-    socket.emit('room list', )
+function getRoomList(myId) {
+    socket.emit('room list', myId)
 }

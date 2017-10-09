@@ -48,7 +48,6 @@ io.on('connection', function (socket) {
 });
 
 function joinToRoom(user, roomId, userId) {
-    console.log(userId, !rooms[roomId].players.includes(userId));
     if (!rooms[roomId].players.includes(userId)) {
         rooms[roomId].players.push(userId);
     }
@@ -58,7 +57,7 @@ function joinToRoom(user, roomId, userId) {
         fields: rooms[roomId].board
     }
 
-    user.emit('joined room', data);
+    user.emit('joined room', data, rooms[roomId].title);
     user.join(roomId);
     io.emit('room list', filterOpenedRooms(rooms, userId));
 }

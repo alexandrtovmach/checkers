@@ -18,8 +18,8 @@ class App extends Component {
             this.props.onGetBoard(board);
         });
 
-        socket.on('joined room', (room) => {
-            this.props.onJoinedRoom(room);
+        socket.on('joined room', (room, title) => {
+            this.props.onJoinedRoom(room, title);
         });
 
         socket.on('room list', (rooms) => {
@@ -53,10 +53,10 @@ class App extends Component {
         return (
             <div>
                 <header className="app-header">
-                    <h1 className="app-title">Easy Checkers</h1>
+                    <h1 className="app-title">{this.props.gameTitle}</h1>
                 </header>
                 <div className='content'>
-                    <div className={this.props.room >= 0? 'hidden': ''}>
+                    <div className={this.props.room >= 0? 'hidden': 'menu-component'}>
                         <Menu
                             rooms={this.props.rooms} 
                             onJoinRoom={this.props.onJoinRoom}
@@ -67,6 +67,8 @@ class App extends Component {
                         <Board store={this.props} />
                     </div>
                 </div>
+                <p><strong>Easy Checkers</strong> its trainee project for up skills in React development.</p>
+                <p>Stack: <q>React&Redux, Nodejs, Socket.io</q></p>
             </div>
         )
     }
@@ -77,7 +79,8 @@ export default connect(
         activeField: state.activeField,
         room: state.room,
         rooms: state.rooms,
-        myId: state.myId
+        myId: state.myId,
+        gameTitle: state.gameTitle
     }),
     (dispatch) => ({
         onClickField: (index) => {
@@ -101,8 +104,8 @@ export default connect(
         onJoinRoom: (room) => {
             dispatch({type: 'JOIN_ROOM', payload: room});
         },
-        onJoinedRoom: (data) => {
-            dispatch({type: 'JOINED_ROOM', payload: data});
+        onJoinedRoom: (data, title) => {
+            dispatch({type: 'JOINED_ROOM', payload: data, title});
         },
         onGetedRoomList: (rooms, myId) => {
             dispatch({type: 'GETED_ROOM_LIST', payload: rooms, myId: myId});
