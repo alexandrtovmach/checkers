@@ -1,17 +1,19 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
 import { Board } from './components/board/board';
-import io from 'socket.io-client';
+import { Menu } from './components/menu/menu';
+import { socket, SocketService } from './services/socketService';
 import './app.css';
 import './general.css';
+
+const socketService = new SocketService();
+
+socketService.getRoomList();
 
 class App extends Component {
 
     constructor(props) {
         super(props);
-
-        const socket = io('http://localhost:3128');
-
         socket.on('get board', (board) => {
             this.props.onGetBoard(board);
         });
@@ -19,12 +21,11 @@ class App extends Component {
         socket.on('joined room', (room) => {
             this.props.onJoinedRoom(room);
         });
-    }
 
-    
-    onJoinRoom() {
-        this.props.onJoinRoom();
-    }
+        socket.on('room list', (rooms) => {
+            this.props.onGetedRoomList(rooms);
+        });
+    }    
 
     render() {
         return (
@@ -32,11 +33,18 @@ class App extends Component {
                 <header className="app-header">
                     <h1 className="app-title">Easy Checkers</h1>
                 </header>
-                <div className="content">
-                    <Board store={this.props}/>
+                <div className='content'>
+                    <div className={this.props.room? 'hidden': ''}>
+                        <Menu
+                            rooms={this.props.rooms} 
+                            onJoinRoom={this.props.onJoinRoom}
+                            onNewRoom={this.props.onNewRoom}
+                        />
+                    </div>
+                    <div className={this.props.room? '': 'hidden'}>
+                        <Board store={this.props} />
+                    </div>
                 </div>
-                <button onClick={this.props.onNewRoom}>Create new room</button>
-                <button onClick={this.onJoinRoom.bind(this)}>Join in room</button>
             </div>
         )
     }
@@ -45,7 +53,8 @@ export default connect(
     (state) => ({
         fields: state.fields,
         activeField: state.activeField,
-        room: state.room
+        room: state.room,
+        rooms: state.rooms
     }),
     (dispatch) => ({
         onClickField: (index) => {
@@ -63,14 +72,18 @@ export default connect(
         onGetBoard: (board) => {
             dispatch({type: 'GET_BOARD', payload: board});
         },
-        onNewRoom: () => {
-            dispatch({type: 'NEW_ROOM'});
+        onNewRoom: (name) => {
+            dispatch({type: 'NEW_ROOM', payload: name});
         },
-        onJoinRoom: () => {
-            dispatch({type: 'JOIN_ROOM'});
+        onJoinRoom: (room) => {
+            dispatch({type: 'JOIN_ROOM', payload: room});
         },
-        onJoinedRoom: (room) => {
-            dispatch({type: 'JOINED_ROOM', payload: room});
+        onJoinedRoom: (data) => {
+            console.log(data)
+            dispatch({type: 'JOINED_ROOM', payload: data});
+        },
+        onGetedRoomList: (rooms) => {
+            dispatch({type: 'GETED_ROOM_LIST', payload: rooms});
         }
     })
 )(App);

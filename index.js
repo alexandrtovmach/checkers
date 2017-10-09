@@ -1,10 +1,12 @@
+import 'babel-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
-import './index.css';
-import App from './app';
-import { game } from './reducers/reducer';
+
+import './src/index.css';
+import App from './src/app';
+import { game } from './src/reducers/reducer';
 
 const store = createStore(game);
 
