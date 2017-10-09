@@ -20,6 +20,7 @@ for (let i = 0; i < 32; i++) {
 export function game(state = {}, action) {
     state.fields = state.fields || fields;
     state.rooms = state.rooms || [];
+    state.myId = state.myId || '';
     switch (action.type) {
         case 'CLICK_FIELD': {
             if (state.fields[action.payload].checker) {
@@ -146,23 +147,21 @@ export function game(state = {}, action) {
             break;
         }
         case 'JOIN_ROOM': {
-            socketService.joinRoom(action.payload);
+            socketService.joinRoom(action.payload, state.myId);
             break;
         }
-        case 'JOINED_ROOM': {
-            console.log('joined', action.payload);
-            
+        case 'JOINED_ROOM': {            
             return {
                 ...state,
                 ...action.payload
             };
             break;
         }
-        case 'GETED_ROOM_LIST': {
-            console.log(action.payload);        
+        case 'GETED_ROOM_LIST': {     
             return {
                 ...state,
-                rooms: action.payload
+                rooms: action.payload,
+                myId: action.myId
             };
             break;
         }

@@ -3,24 +3,26 @@ const io = require('socket.io')(http);
 
 const rooms = [{
         title: 'Easy',
-        id: 1,
+        id: 0,
         players: []
     },
     {
         title: 'Amateur',
-        id: 2,
+        id: 1,
         players: []
     },
     {
         title: 'Pro',
-        id: 3,
+        id: 2,
         players: []
     }
 ];
-
+// setInterval(() => {
+//     console.log('\n\n');
+//     console.log(rooms);
+// }, 5000)
 
 io.on('connection', function (socket) {
-    
     socket.on('new room', (data) => {
         rooms.push({
             id: rooms.length,
@@ -31,36 +33,39 @@ io.on('connection', function (socket) {
         io.emit('room list', filterOpenedRooms(rooms));
     });
     
-    socket.on('join room', (id) => {
-        joinToRoom(socket, id)
+    socket.on('join room', (roomId, userId) => {
+        joinToRoom(socket, roomId, userId)
     })
     
     socket.on('send board', (board, room) => {
-        rooms[room - 1].board = board;
+        rooms[room].board = board;
         socket.to(room).emit('get board', board);
     })
     
-    socket.on('room list', () => {
-        socket.emit('room list', filterOpenedRooms(rooms));
+    socket.on('room list', (userId) => {
+        socket.emit('room list', filterOpenedRooms(rooms, userId));
     })
 });
 
-function joinToRoom(user, roomId) {
-    rooms[roomId - 1].players.push(user.id);
+function joinToRoom(user, roomId, userId) {
+    console.log(userId, !rooms[roomId].players.includes(userId));
+    if (!rooms[roomId].players.includes(userId)) {
+        rooms[roomId].players.push(userId);
+    }
 
     let data = {
         room: roomId,
-        fields: rooms[roomId - 1].board
+        fields: rooms[roomId].board
     }
 
     user.emit('joined room', data);
     user.join(roomId);
-    io.emit('room list', filterOpenedRooms(rooms));
+    io.emit('room list', filterOpenedRooms(rooms, userId));
 }
 
-function filterOpenedRooms(rooms) {
+function filterOpenedRooms(rooms, userId) {
     return rooms.filter((elem) => {
-        return elem.players.length < 2
+        return ((elem.players.length < 2) || elem.players.includes(userId))
     })
 }
 

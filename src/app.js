@@ -8,7 +8,7 @@ import './general.css';
 
 const socketService = new SocketService();
 
-socketService.getRoomList();
+socketService.getRoomList(localStorage.getItem('checkersId'));
 
 class App extends Component {
 
@@ -23,7 +23,29 @@ class App extends Component {
         });
 
         socket.on('room list', (rooms) => {
-            this.props.onGetedRoomList(rooms);
+            if (localStorage.length) {
+                let myId = localStorage.getItem('checkersId'),
+                    activeGames = [],
+                    otherGames = [];
+                
+                rooms.forEach((el) => {
+                    if (el.players.includes(myId)) {
+                        activeGames.push(el)
+                    } else {
+                        otherGames.push(el)
+                    }
+                })
+                this.props.onGetedRoomList({
+                    activeGames: activeGames,
+                    otherGames: otherGames
+                }, myId);
+            } else {
+                localStorage.setItem('checkersId', socket.id);
+                this.props.onGetedRoomList({
+                    activeGames: [],
+                    otherGames: rooms
+                }, socket.id)
+            }
         });
     }    
 
@@ -34,14 +56,14 @@ class App extends Component {
                     <h1 className="app-title">Easy Checkers</h1>
                 </header>
                 <div className='content'>
-                    <div className={this.props.room? 'hidden': ''}>
+                    <div className={this.props.room >= 0? 'hidden': ''}>
                         <Menu
                             rooms={this.props.rooms} 
                             onJoinRoom={this.props.onJoinRoom}
                             onNewRoom={this.props.onNewRoom}
                         />
                     </div>
-                    <div className={this.props.room? '': 'hidden'}>
+                    <div className={this.props.room >= 0? '': 'hidden'}>
                         <Board store={this.props} />
                     </div>
                 </div>
@@ -54,7 +76,8 @@ export default connect(
         fields: state.fields,
         activeField: state.activeField,
         room: state.room,
-        rooms: state.rooms
+        rooms: state.rooms,
+        myId: state.myId
     }),
     (dispatch) => ({
         onClickField: (index) => {
@@ -79,11 +102,10 @@ export default connect(
             dispatch({type: 'JOIN_ROOM', payload: room});
         },
         onJoinedRoom: (data) => {
-            console.log(data)
             dispatch({type: 'JOINED_ROOM', payload: data});
         },
-        onGetedRoomList: (rooms) => {
-            dispatch({type: 'GETED_ROOM_LIST', payload: rooms});
+        onGetedRoomList: (rooms, myId) => {
+            dispatch({type: 'GETED_ROOM_LIST', payload: rooms, myId: myId});
         }
     })
 )(App);
