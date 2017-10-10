@@ -22,13 +22,13 @@ export class Menu extends Component {
         if (activeGames && this.props.rooms.activeGames) {
             return this.props.rooms.activeGames.map((elem, i) => {
                 return (
-                    <li key={i+'a'} onClick={this.onJoinRoom.bind(this, elem.id)}>{elem.title}</li>
+                    <li key={i+'a'} onClick={this.onJoinRoom.bind(this, elem.id)}>{elem.title} ({elem.players.length})</li>
                 )
             })
         } else if (this.props.rooms.otherGames) {
             return this.props.rooms.otherGames.map((elem, i) => {
                 return (
-                    <li key={i+'o'} onClick={this.onJoinRoom.bind(this, elem.id)}>{elem.title}</li>
+                    <li key={i+'o'} onClick={this.onJoinRoom.bind(this, elem.id)}>{elem.title} ({elem.players.length})</li>
                 )
             })
         }
@@ -46,13 +46,13 @@ export class Menu extends Component {
                 <h3>...or find already, and start the game</h3>
                 <div className="horizontalAlignContent">
                     <div className={(this.props.rooms.activeGames && this.props.rooms.activeGames.length)? 'active': 'hidden'}>
-                        <h3>Active games</h3>
+                        <h3>Your rooms</h3>
                         <ul>
                             {this.generateRoomList(true)}
                         </ul>
                     </div>
                     <div className={this.props.rooms.otherGames && this.props.rooms.otherGames.length? 'other': 'hidden'}>
-                        <h3>Other games</h3>
+                        <h3>Other rooms</h3>
                         <ul>
                             {this.generateRoomList()}
                         </ul>

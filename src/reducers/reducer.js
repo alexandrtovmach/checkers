@@ -22,6 +22,9 @@ export function game(state = {}, action) {
     state.rooms = state.rooms || [];
     state.myId = state.myId || '';
     state.gameTitle = state.gameTitle || 'Easy Checkers';
+    state.mySide = state.mySide;
+    state.turn = (state.turn === undefined)? state.mySide: state.turn;
+    state.finishedGame = state.finishedGame;
     switch (action.type) {
         case 'CLICK_FIELD': {
             if (state.fields[action.payload].checker) {
@@ -112,7 +115,8 @@ export function game(state = {}, action) {
             return {
                 ...state,
                 fields: cacheArr,
-                activeField: null
+                activeField: null,
+                turn: +(!state.turn)
             };
             break;
         }
@@ -130,16 +134,17 @@ export function game(state = {}, action) {
             return {
                 ...state,
                 fields: cacheArr,
-                activeField: null
+                activeField: null,
+                turn: +(!state.turn)
             };
             break;
         }
         case 'GET_BOARD': {
-
             return {
                 ...state,
                 fields: action.payload,
-                activeField: null
+                activeField: null,
+                turn: +(!state.turn)
             };
             break;
         }
@@ -155,15 +160,24 @@ export function game(state = {}, action) {
             return {
                 ...state,
                 ...action.payload,
-                gameTitle: action.title
+                gameTitle: action.title,
+                mySide: action.side,
+                turn: +(!state.turn)
             };
             break;
         }
-        case 'GETED_ROOM_LIST': {     
+        case 'GETED_ROOM_LIST': {
             return {
                 ...state,
                 rooms: action.payload,
                 myId: action.myId
+            };
+            break;
+        }
+        case 'FINISHED_GAME': {     
+            return {
+                ...state,
+                finishedGame: action.payload
             };
             break;
         }

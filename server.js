@@ -14,9 +14,6 @@ app.use(webpackHotMiddleware(compiler))
 app.get("/", function(req, res) {
     res.sendFile(__dirname + '/index.html');
 })
-app.get("/bg.png", function(req, res) {
-    res.sendFile(__dirname + '/bg.png');
-})
 
 app.listen(port, function(error) {
     if (error) {

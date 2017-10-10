@@ -18,8 +18,12 @@ class App extends Component {
             this.props.onGetBoard(board);
         });
 
-        socket.on('joined room', (room, title) => {
-            this.props.onJoinedRoom(room, title);
+        socket.on('finished game', (winner) => {
+            this.props.onFinishedGame(winner);
+        });
+
+        socket.on('joined room', (room, title, side) => {
+            this.props.onJoinedRoom(room, title, side);
         });
 
         socket.on('room list', (rooms) => {
@@ -52,10 +56,12 @@ class App extends Component {
     render() {
         return (
             <div>
-                <header className="app-header">
+                <header className={`turn${this.props.mySide} app-header`}>
                     <h1 className="app-title">{this.props.gameTitle}</h1>
+                    <i>*header color indicate your color</i>
                 </header>
-                <div className='content'>
+                <div className={`turn${this.props.turn} content`}>
+                    <i>*background color indicate whose must turn now</i>
                     <div className={this.props.room >= 0? 'hidden': 'menu-component'}>
                         <Menu
                             rooms={this.props.rooms} 
@@ -80,7 +86,10 @@ export default connect(
         room: state.room,
         rooms: state.rooms,
         myId: state.myId,
-        gameTitle: state.gameTitle
+        gameTitle: state.gameTitle,
+        mySide: state.mySide,
+        turn: state.turn,
+        finishedGame: state.finishedGame
     }),
     (dispatch) => ({
         onClickField: (index) => {
@@ -104,11 +113,14 @@ export default connect(
         onJoinRoom: (room) => {
             dispatch({type: 'JOIN_ROOM', payload: room});
         },
-        onJoinedRoom: (data, title) => {
-            dispatch({type: 'JOINED_ROOM', payload: data, title});
+        onJoinedRoom: (data, title, side) => {
+            dispatch({type: 'JOINED_ROOM', payload: data, title, side});
         },
         onGetedRoomList: (rooms, myId) => {
             dispatch({type: 'GETED_ROOM_LIST', payload: rooms, myId: myId});
+        },
+        onFinishedGame: (winner) => {
+            dispatch({type: 'FINISHED_GAME', payload: winner});
         }
     })
 )(App);

@@ -16,6 +16,7 @@ export class Field extends Component {
         } else if (this.props.status === 2) {
             this.props.onStepField(this.props.fieldIndex);
         } else {
+            if ((this.props.mySide !== this.props.side) || (this.props.turn !== this.props.side)) {return false}
             this.props.onClickField(this.props.fieldIndex);
         }
         
